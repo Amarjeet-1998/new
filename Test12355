@@ -1,26 +1,18 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Interactive Box Plot per Scenario with Country Dots and Legend",
+  "description": "Enhanced Box Plot per Scenario with Country Dots (Min 3000, Larger Boxes)",
   "data": {"name": "dataset"},
-  
-  "selection": {
-    "highlight": {
-      "type": "multi",
-      "fields": ["Country"],
-      "bind": "legend"
-    }
-  },
   
   "layer": [
     {
-      // Boxplot layer
       "mark": {
         "type": "boxplot",
         "extent": "min-max",
         "fill": "#a6cee3",
         "stroke": "#1f78b4",
         "median": {"color": "#1f78b4", "strokeWidth": 2},
-        "box": {"strokeWidth": 1.5}
+        "box": {"strokeWidth": 1.5},
+        "size": 50
       },
       "encoding": {
         "x": {
@@ -31,16 +23,16 @@
         "y": {
           "field": "Fee",
           "type": "quantitative",
+          "scale": {"domain": [3000, null]},
           "axis": {"title": "Fee (USD)"}
         }
       }
     },
     {
-      // Country dots overlay
       "mark": {
         "type": "point",
         "filled": true,
-        "size": 80,
+        "size": 100,
         "opacity": 0.8,
         "stroke": "white",
         "strokeWidth": 0.7
@@ -57,18 +49,7 @@
           {"field": "Scenario", "title": "Scenario"},
           {"field": "Country", "title": "Country"},
           {"field": "Fee", "title": "Fee (USD)", "format": ",.0f"}
-        ],
-        "opacity": {
-          "condition": {"selection": "highlight", "value": 1},
-          "value": 0.2
-        }
-      },
-      "selection": {
-        "highlight": {
-          "type": "multi",
-          "fields": ["Country"],
-          "bind": "legend"
-        }
+        ]
       }
     }
   ],
