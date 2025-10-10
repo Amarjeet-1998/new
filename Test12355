@@ -1,0 +1,98 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Enhanced Scenario Fee Distribution (Box Plot + Mean + Country Points + Min–Max Range)",
+  "data": {"name": "dataset"},
+  
+  "transform": [
+    {
+      "aggregate": [
+        {"op": "min", "field": "Total Fees USD", "as": "Fee_Min"},
+        {"op": "q1", "field": "Total Fees USD", "as": "Fee_Q1"},
+        {"op": "median", "field": "Total Fees USD", "as": "Fee_Median"},
+        {"op": "q3", "field": "Total Fees USD", "as": "Fee_Q3"},
+        {"op": "max", "field": "Total Fees USD", "as": "Fee_Max"},
+        {"op": "mean", "field": "Total Fees USD", "as": "Fee_Mean"},
+        {"op": "stdev", "field": "Total Fees USD", "as": "Fee_StdDev"},
+        {"op": "count", "field": "Total Fees USD", "as": "Count"}
+      ],
+      "groupby": ["Scenario Ref"]
+    },
+    {
+      "calculate": "datum.Fee_Q3 + 1.5 * (datum.Fee_Q3 - datum.Fee_Q1)",
+      "as": "Upper_Whisker"
+    },
+    {
+      "calculate": "datum.Fee_Q1 - 1.5 * (datum.Fee_Q3 - datum.Fee_Q1)",
+      "as": "Lower_Whisker"
+    }
+  ],
+
+  "layer": [
+    {
+      "mark": {"type": "bar", "color": "#c6dbef", "width": 20, "opacity": 0.6},
+      "encoding": {
+        "x": {
+          "field": "Scenario Ref",
+          "type": "nominal",
+          "axis": {"title": "Scenario Ref", "labelAngle": -30}
+        },
+        "y": {"field": "Fee_Q1", "type": "quantitative", "axis": {"title": "Total Fees (USD)"}},
+        "y2": {"field": "Fee_Q3"},
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario Ref"},
+          {"field": "Fee_Min", "title": "Min Fee", "format": ",.0f"},
+          {"field": "Fee_Q1", "title": "Q1 (25%)", "format": ",.0f"},
+          {"field": "Fee_Median", "title": "Median (50%)", "format": ",.0f"},
+          {"field": "Fee_Q3", "title": "Q3 (75%)", "format": ",.0f"},
+          {"field": "Fee_Max", "title": "Max Fee", "format": ",.0f"},
+          {"field": "Fee_Mean", "title": "Mean Fee", "format": ",.0f"},
+          {"field": "Fee_StdDev", "title": "Std Dev", "format": ",.0f"},
+          {"field": "Count", "title": "Records"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "rule", "color": "#2171b5", "strokeWidth": 2},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Fee_Min"},
+        "y2": {"field": "Fee_Max"}
+      }
+    },
+    {
+      "mark": {"type": "tick", "color": "#08306b", "size": 15},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Fee_Median"}
+      }
+    },
+    {
+      "mark": {"type": "point", "shape": "diamond", "color": "#ff7f0e", "size": 60},
+      "encoding": {
+        "x": {"field": "Scenario Ref"},
+        "y": {"field": "Fee_Mean"},
+        "tooltip": [{"field": "Fee_Mean", "title": "Mean Fee", "format": ",.0f"}]
+      }
+    },
+    {
+      "data": {"name": "dataset"},
+      "mark": {"type": "circle", "filled": true, "opacity": 0.7, "size": 60},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "color": {"field": "Country", "type": "nominal", "legend": {"title": "Country"}},
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario Ref"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
+        ]
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 11, "titleFontSize": 12},
+    "legend": {"labelFontSize": 11, "titleFontSize": 12}
+  }
+}
