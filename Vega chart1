@@ -1,54 +1,54 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Enhanced Box Plot per Scenario with Country Dots (Min 3000, Larger Boxes)",
+  "description": "Enhanced Box Plot per Scenario with Country Dots",
   "data": {"name": "dataset"},
   
   "layer": [
     {
+      // Boxplot layer
       "mark": {
         "type": "boxplot",
         "extent": "min-max",
         "fill": "#a6cee3",
         "stroke": "#1f78b4",
         "median": {"color": "#1f78b4", "strokeWidth": 2},
-        "box": {"strokeWidth": 1.5},
-        "size": 50
+        "box": {"strokeWidth": 1.5}
       },
       "encoding": {
         "x": {
-          "field": "Scenario",
+          "field": "Scenario Ref",
           "type": "nominal",
           "axis": {"title": "Scenario", "labelAngle": -30}
         },
         "y": {
-          "field": "Fee",
+          "field": "Total Fees USD",
           "type": "quantitative",
-          "scale": {"domain": [3000, null]},
           "axis": {"title": "Fee (USD)"}
         }
       }
     },
     {
+      // Country dots overlay
       "mark": {
         "type": "point",
         "filled": true,
-        "size": 100,
+        "size": 80,
         "opacity": 0.8,
         "stroke": "white",
         "strokeWidth": 0.7
       },
       "encoding": {
-        "x": {"field": "Scenario", "type": "nominal"},
-        "y": {"field": "Fee", "type": "quantitative"},
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
         "color": {
           "field": "Country",
           "type": "nominal",
           "legend": {"title": "Country"}
         },
         "tooltip": [
-          {"field": "Scenario", "title": "Scenario"},
+          {"field": "Scenario Ref", "title": "Scenario"},
           {"field": "Country", "title": "Country"},
-          {"field": "Fee", "title": "Fee (USD)", "format": ",.0f"}
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
         ]
       }
     }
