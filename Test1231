@@ -1,0 +1,58 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Scenario Fee Range Chart (Min–Max Fee per Scenario with Country Dots)",
+  "data": {
+    "name": "dataset"
+  },
+  "encoding": {
+    "x": {
+      "field": "Scenario Ref",
+      "type": "nominal",
+      "axis": {"title": "Scenario", "labelAngle": -30}
+    },
+    "y": {
+      "field": "Total Fees USD",
+      "type": "quantitative",
+      "axis": {"title": "Fee (USD)"}
+    },
+    "color": {
+      "field": "Country",
+      "type": "nominal",
+      "legend": {"title": "Country"}
+    },
+    "tooltip": [
+      {"field": "Scenario Ref", "title": "Scenario Ref"},
+      {"field": "Country", "title": "Country"},
+      {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"},
+      {"field": "Min fee per Scenario", "title": "Min Fee", "format": ",.0f"},
+      {"field": "Max Fee Per Scenario", "title": "Max Fee", "format": ",.0f"}
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "color": "#6baed6",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "y": {"field": "Min fee per Scenario", "type": "quantitative"},
+        "y2": {"field": "Max Fee Per Scenario", "type": "quantitative"},
+        "x": {"field": "Scenario Ref", "type": "nominal"}
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 90,
+        "opacity": 0.9
+      }
+    }
+  ],
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 11, "titleFontSize": 12},
+    "legend": {"labelFontSize": 11, "titleFontSize": 12}
+  }
+}
