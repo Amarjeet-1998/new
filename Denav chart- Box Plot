@@ -63,3 +63,91 @@ Denav chart - Box Plot
     "legend": {"labelFontSize": 12, "titleFontSize": 14}
   }
 }
+
+
+
+222222
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Enhanced Box Plot per Scenario with Country Dots and Labels",
+  "data": {"name": "dataset"},
+
+  "layer": [
+    {
+      // Boxplot layer
+      "mark": {
+        "type": "boxplot",
+        "extent": "min-max",
+        "fill": "#a6cee3",
+        "stroke": "#1f78b4",
+        "median": {"color": "#1f78b4", "strokeWidth": 6},
+        "box": {"strokeWidth": 1.5},
+        "size": 25
+      },
+      "encoding": {
+        "x": {
+          "field": "Scenario Ref",
+          "type": "nominal",
+          "axis": {"title": "Scenario Reference", "labelAngle": -30}
+        },
+        "y": {
+          "field": "Total Fees USD",
+          "type": "quantitative",
+          "axis": {"title": "Fee (USD)"}
+        }
+      }
+    },
+    {
+      // Country dots overlay
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80,
+        "opacity": 0.8,
+        "stroke": "white",
+        "strokeWidth": 0.7
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
+        ]
+      }
+    },
+    {
+      // Text labels for country names
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 7,
+        "fontSize": 11,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "text": {"field": "Country"},
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "legend": null
+        }
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 14, "titleFontSize": 14},
+    "legend": {"labelFontSize": 12, "titleFontSize": 14}
+  }
+}
