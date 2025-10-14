@@ -661,3 +661,199 @@ final code
 }
 
 _-------------+++
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Box Plot per Scenario with Country Dots, Hover Labels, and Whisker Lines + Caps",
+  "data": {"name": "dataset"},
+
+  "layer": [
+    {
+      // --- Boxplot layer ---
+      "mark": {
+        "type": "boxplot",
+        "extent": "min-max",
+        "fill": "#a6cee3",
+        "stroke": "#1f78b4",
+        "median": {"color": "#1f78b4", "strokeWidth": 6},
+        "box": {"strokeWidth": 1.5},
+        "size": 25
+      },
+      "encoding": {
+        "x": {
+          "field": "Scenario Ref",
+          "type": "nominal",
+          "axis": {"title": "Scenario Reference", "labelAngle": -30}
+        },
+        "y": {
+          "field": "Total Fees USD",
+          "type": "quantitative",
+          "axis": {"title": "Fee (USD)"}
+        }
+      }
+    },
+
+    {
+      // --- Country dots overlay ---
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80,
+        "opacity": 0.8,
+        "stroke": "white",
+        "strokeWidth": 0.7
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
+        ]
+      },
+      "selection": {
+        "highlight": {"type": "single", "on": "mouseover", "clear": "mouseout"}
+      }
+    },
+
+    {
+      // --- Hover label ---
+      "mark": {
+        "type": "text",
+        "dy": -10,
+        "fontSize": 11,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "text": {"field": "Country"},
+        "opacity": {
+          "condition": {"selection": "highlight", "value": 1},
+          "value": 0
+        },
+        "color": {
+          "condition": {"selection": "highlight", "field": "Country", "type": "nominal"},
+          "value": "black"
+        }
+      }
+    },
+
+    {
+      // --- Lower whisker dotted line ---
+      "transform": [
+        {
+          "aggregate": [
+            {"op": "q1", "field": "Total Fees USD", "as": "q1"},
+            {"op": "q3", "field": "Total Fees USD", "as": "q3"},
+            {"op": "min", "field": "Total Fees USD", "as": "min_val"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {
+          "calculate": "max(datum.min_val, datum.q1 - 1.5 * (datum.q3 - datum.q1))",
+          "as": "lower_whisker"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "strokeDash": [4, 4],
+        "strokeWidth": 2,
+        "color": "#1f78b4"
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "lower_whisker", "type": "quantitative"},
+        "y2": {"field": "lower_whisker"}
+      }
+    },
+
+    {
+      // --- Upper whisker dotted line ---
+      "transform": [
+        {
+          "aggregate": [
+            {"op": "q1", "field": "Total Fees USD", "as": "q1"},
+            {"op": "q3", "field": "Total Fees USD", "as": "q3"},
+            {"op": "max", "field": "Total Fees USD", "as": "max_val"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {
+          "calculate": "min(datum.max_val, datum.q3 + 1.5 * (datum.q3 - datum.q1))",
+          "as": "upper_whisker"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "strokeDash": [4, 4],
+        "strokeWidth": 2,
+        "color": "#1f78b4"
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "upper_whisker", "type": "quantitative"},
+        "y2": {"field": "upper_whisker"}
+      }
+    },
+
+    {
+      // --- Lower whisker cap (T-shaped end) ---
+      "transform": [
+        {
+          "aggregate": [
+            {"op": "q1", "field": "Total Fees USD", "as": "q1"},
+            {"op": "q3", "field": "Total Fees USD", "as": "q3"},
+            {"op": "min", "field": "Total Fees USD", "as": "min_val"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {
+          "calculate": "max(datum.min_val, datum.q1 - 1.5 * (datum.q3 - datum.q1))",
+          "as": "lower_whisker"
+        }
+      ],
+      "mark": {"type": "rule", "strokeWidth": 2, "color": "#1f78b4"},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal", "offset": -8},
+        "x2": {"field": "Scenario Ref", "type": "nominal", "offset": 8},
+        "y": {"field": "lower_whisker", "type": "quantitative"}
+      }
+    },
+
+    {
+      // --- Upper whisker cap (T-shaped end) ---
+      "transform": [
+        {
+          "aggregate": [
+            {"op": "q1", "field": "Total Fees USD", "as": "q1"},
+            {"op": "q3", "field": "Total Fees USD", "as": "q3"},
+            {"op": "max", "field": "Total Fees USD", "as": "max_val"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {
+          "calculate": "min(datum.max_val, datum.q3 + 1.5 * (datum.q3 - datum.q1))",
+          "as": "upper_whisker"
+        }
+      ],
+      "mark": {"type": "rule", "strokeWidth": 2, "color": "#1f78b4"},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal", "offset": -8},
+        "x2": {"field": "Scenario Ref", "type": "nominal", "offset": 8},
+        "y": {"field": "upper_whisker", "type": "quantitative"}
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 14, "titleFontSize": 14},
+    "legend": {"labelFontSize": 12, "titleFontSize": 14}
+  }
+}
