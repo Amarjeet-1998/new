@@ -1077,14 +1077,16 @@ _-----------
 
 
 aaaaaaaaasaaassssssssaa
+
+
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Box Plot per Scenario with Exclusive Whiskers and Dotted Whiskers",
+  "description": "Manual Boxplot with Exclusive Whiskers and Dotted Lines",
   "data": {"name": "dataset"},
 
   "transform": [
     {
-      "window": [
+      "aggregate": [
         {"op": "q1", "field": "Total Fees USD", "as": "q1"},
         {"op": "q3", "field": "Total Fees USD", "as": "q3"},
         {"op": "median", "field": "Total Fees USD", "as": "median"}
@@ -1107,22 +1109,15 @@ aaaaaaaaasaaassssssssaa
 
   "layer": [
     {
-      // --- Box ---
-      "mark": {
-        "type": "bar",
-        "fill": "#a6cee3",
-        "stroke": "#1f78b4",
-        "strokeWidth": 1.5
-      },
+      "mark": {"type": "bar", "size": 25, "fill": "#a6cee3", "stroke": "#1f78b4", "strokeWidth": 1.5},
       "encoding": {
         "x": {"field": "Scenario Ref", "type": "nominal"},
-        "y": {"field": "q1", "type": "quantitative"},
+        "y": {"field": "q1"},
         "y2": {"field": "q3"}
       }
     },
     {
-      // --- Median line ---
-      "mark": {"type": "rule", "color": "#1f78b4", "strokeWidth": 6},
+      "mark": {"type": "rule", "stroke": "#1f78b4", "strokeWidth": 6},
       "encoding": {
         "x": {"field": "Scenario Ref", "type": "nominal"},
         "y": {"field": "median"},
@@ -1130,8 +1125,7 @@ aaaaaaaaasaaassssssssaa
       }
     },
     {
-      // --- Upper whisker dotted line ---
-      "mark": {"type": "rule", "strokeDash": [4, 2], "color": "#1f78b4", "strokeWidth": 1.5},
+      "mark": {"type": "rule", "stroke": "#1f78b4", "strokeDash": [4, 2], "strokeWidth": 1.5},
       "encoding": {
         "x": {"field": "Scenario Ref", "type": "nominal"},
         "y": {"field": "q3"},
@@ -1139,8 +1133,7 @@ aaaaaaaaasaaassssssssaa
       }
     },
     {
-      // --- Lower whisker dotted line ---
-      "mark": {"type": "rule", "strokeDash": [4, 2], "color": "#1f78b4", "strokeWidth": 1.5},
+      "mark": {"type": "rule", "stroke": "#1f78b4", "strokeDash": [4, 2], "strokeWidth": 1.5},
       "encoding": {
         "x": {"field": "Scenario Ref", "type": "nominal"},
         "y": {"field": "q1"},
@@ -1148,15 +1141,7 @@ aaaaaaaaasaaassssssssaa
       }
     },
     {
-      // --- Country dots overlay ---
-      "mark": {
-        "type": "point",
-        "filled": true,
-        "size": 80,
-        "opacity": 0.8,
-        "stroke": "white",
-        "strokeWidth": 0.7
-      },
+      "mark": {"type": "point", "filled": true, "size": 80, "opacity": 0.8, "stroke": "white", "strokeWidth": 0.7},
       "encoding": {
         "x": {"field": "Scenario Ref", "type": "nominal"},
         "y": {"field": "Total Fees USD", "type": "quantitative"},
@@ -1167,12 +1152,9 @@ aaaaaaaaasaaassssssssaa
           {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
         ]
       },
-      "selection": {
-        "highlight": {"type": "single", "on": "mouseover", "clear": "mouseout"}
-      }
+      "selection": {"highlight": {"type": "single", "on": "mouseover", "clear": "mouseout"}}
     },
     {
-      // --- Hover label ---
       "mark": {
         "type": "text",
         "dx": 10,
