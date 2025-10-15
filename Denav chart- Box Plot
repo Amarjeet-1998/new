@@ -857,3 +857,129 @@ _-------------+++
     "legend": {"labelFontSize": 12, "titleFontSize": 14}
   }
 }
+
+
+1510
+
+_-----------
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Exclusive (IQR) Box Plot per Scenario with Country legend, hover animations, and smooth easing transitions",
+  "data": {"name": "dataset"},
+
+  "layer": [
+    {
+      // --- Boxplot layer (Exclusive whiskers) ---
+      "mark": {
+        "type": "boxplot",
+        "extent": "iqr",
+        "fill": "#a6cee3",
+        "stroke": "#1f78b4",
+        "median": {"color": "#1f78b4", "strokeWidth": 2},
+        "box": {"strokeWidth": 1.5},
+        "size": 50,
+        "outliers": {
+          "fill": "#e31a1c",
+          "shape": "triangle-up",
+          "size": 90
+        }
+      },
+      "encoding": {
+        "x": {
+          "field": "Scenario Ref",
+          "type": "nominal",
+          "axis": {"title": "Scenario Ref", "labelAngle": -30}
+        },
+        "y": {
+          "field": "Total Fees (USD)",
+          "type": "quantitative",
+          "axis": {"title": "Total Fees (USD)"}
+        },
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees (USD)", "title": "Fees (USD)"}
+        ]
+      }
+    },
+    {
+      // --- Animated country data points with smooth hover transition ---
+      "selection": {
+        "pointHover": {"type": "single", "on": "mouseover", "empty": "none"},
+        "pointUnhover": {"type": "single", "on": "mouseout", "empty": "all"}
+      },
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "opacity": 0.8,
+        "animate": {"duration": 300, "easing": "cubic-in-out"}  // Smooth transition
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees (USD)", "type": "quantitative"},
+        "color": {"field": "Country", "type": "nominal", "legend": null},
+        "size": {
+          "condition": [
+            {"selection": "pointHover", "value": 150},
+            {"value": 60}
+          ]
+        },
+        "opacity": {
+          "condition": [
+            {"selection": "pointHover", "value": 1},
+            {"value": 0.7}
+          ]
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees (USD)", "title": "Fees (USD)"}
+        ]
+      }
+    },
+    {
+      // --- Animated outliers with smooth hover transitions ---
+      "selection": {
+        "highlight": {"type": "single", "on": "mouseover", "empty": "none"},
+        "unhighlight": {"type": "single", "on": "mouseout", "empty": "all"}
+      },
+      "mark": {
+        "type": "point",
+        "shape": "triangle-up",
+        "filled": true,
+        "color": "#e31a1c",
+        "stroke": "#b30000",
+        "strokeWidth": 1.5,
+        "animate": {"duration": 350, "easing": "cubic-in-out"}  // Smooth transition
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees (USD)", "type": "quantitative"},
+        "size": {
+          "condition": [
+            {"selection": "highlight", "value": 220},
+            {"value": 100}
+          ]
+        },
+        "opacity": {
+          "condition": [
+            {"selection": "highlight", "value": 1},
+            {"value": 0.8}
+          ]
+        },
+        "tooltip": [
+          {"value": "⚠️ Outlier Detected", "title": ""},
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees (USD)", "title": "Outlier Value (USD)"}
+        ]
+      }
+    }
+  ]
+}
