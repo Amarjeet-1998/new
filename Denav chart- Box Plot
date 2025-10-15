@@ -983,3 +983,94 @@ _-----------
     }
   ]
 }
+
+
+-------------------------------------------------------------------------------------
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Box Plot per Scenario with Country Dots and Hover Labels",
+  "data": {"name": "dataset"},
+
+  "layer": [
+    {
+      // --- Boxplot layer ---
+      "mark": {
+        "type": "boxplot",
+        "extent": "min-max",
+        "fill": "#a6cee3",
+        "stroke": "#1f78b4",
+        "median": {"color": "#1f78b4", "strokeWidth": 6},
+        "box": {"strokeWidth": 1.5},
+        "size": 25
+      },
+      "encoding": {
+        "x": {
+          "field": "Scenario Ref",
+          "type": "nominal",
+          "axis": {"title": "Scenario Reference", "labelAngle": -30}
+        },
+        "y": {
+          "field": "Total Fees USD",
+          "type": "quantitative",
+          "axis": {"title": "Fee (USD)"}
+        }
+      }
+    },
+    {
+      // --- Country dots overlay ---
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80,
+        "opacity": 0.8,
+        "stroke": "white",
+        "strokeWidth": 0.7
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
+        ]
+      },
+      "selection": {
+        "highlight": {"type": "single", "on": "mouseover", "clear": "mouseout"}
+      }
+    },
+    {
+      // --- Hover label (appears only on hover) ---
+      "mark": {
+        "type": "text",
+        "dy": -10,
+        "fontSize": 11,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "text": {"field": "Country"},
+        "opacity": {
+          "condition": {"selection": "highlight", "value": 1},
+          "value": 0
+        },
+        "color": {
+          "condition": {"selection": "highlight", "field": "Country", "type": "nominal"},
+          "value": "black"
+        }
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 14, "titleFontSize": 14},
+    "legend": {"labelFontSize": 12, "titleFontSize": 14}
+  }
+}
