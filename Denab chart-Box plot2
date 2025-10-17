@@ -544,3 +544,106 @@
     "legend": {"labelFontSize": 12, "titleFontSize": 14}
   }
 }
+
+----------------------
+4444444444444444444444444444444444
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Box Plot per Scenario with Country Dots and Hover Labels (Whiskers Only with Outliers)",
+  "data": {"name": "dataset"},
+
+  "layer": [
+    {
+      // --- Boxplot layer (whiskers only) ---
+      "mark": {
+        "type": "boxplot",
+        "extent": 1.5,
+        "fill": "transparent",     // No box fill
+        "stroke": "#1f78b4",
+        "median": {"color": "#1f78b4", "strokeWidth": 2},
+        "box": {"strokeWidth": 0}, // Hide box border
+        "size": 25
+      },
+      "encoding": {
+        "x": {
+          "field": "Scenario Ref",
+          "type": "nominal",
+          "axis": {"title": "Scenario Reference", "labelAngle": -30}
+        },
+        "y": {
+          "field": "Total Fees USD",
+          "type": "quantitative",
+          "axis": {"title": "Fee (USD)"}
+        }
+      }
+    },
+    {
+      // --- Country dots overlay ---
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80,
+        "opacity": 0.8,
+        "stroke": "white",
+        "strokeWidth": 0.7
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "scale":{
+            "domain":["Greece","Slovenia","Italy","Germany","Poland","France","Czech Republic","Cyprus","Switzerland","Hungary","Australia","Canada","South Africa","Austria","Bulgaria","Vietnam","Finland","Spain","Liechtenstein","The Netherlands","Norway"],
+            "range":["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf","#aec7e8","#ffbb78","#98df8a","#ff9896","#c5b0d5","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5","#393b79"]
+          },
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
+        ]
+      },
+      "selection": {
+        "highlight": {"type": "single", "on": "mouseover", "clear": "mouseout"}
+      }
+    },
+    {
+      // --- Hover label ---
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "opacity":0.8,
+        "dx": 10,
+        "fontSize": 10,
+        "fontWeight": "bold",
+        "align":"left",
+        "baseline":"middle",
+        "background":"#f8f9fa",
+        "cornerRadius":3,
+        "padding":2
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "text": {"field": "Country"},
+        "opacity": {
+          "condition": {"selection": "highlight", "value": 1},
+          "value": 0
+        },
+        "color": {
+          "condition": {"selection": "highlight", "field": "Country", "type": "nominal"},
+          "value": "black"
+        }
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 14, "titleFontSize": 14},
+    "legend": {"labelFontSize": 12, "titleFontSize": 14}
+  }
+}
