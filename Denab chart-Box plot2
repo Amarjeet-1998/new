@@ -213,3 +213,139 @@
     "legend": {"labelFontSize": 12, "titleFontSize": 14}
   }
 }
+
+------------------------------------------
+1710
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Boxplot (extent 1.5) with computed Tukey whisker values exposed in tooltip per Scenario Ref",
+  "data": {"name": "dataset"},
+
+  "layer": [
+    {
+      "mark": {
+        "type": "boxplot",
+        "extent": 1.5,
+        "fill": "#a6cee3",
+        "stroke": "#1f78b4",
+        "median": {"color": "#1f78b4", "strokeWidth": 2},
+        "box": {"strokeWidth": 1.5},
+        "size": 25
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal", "axis": {"title": "Scenario Reference", "labelAngle": -30}},
+        "y": {"field": "Total Fees USD", "type": "quantitative", "axis": {"title": "Fee (USD)"}}
+      }
+    },
+
+    {
+      "mark": {"type": "point", "filled": true, "size": 80, "opacity": 0.8, "stroke": "white", "strokeWidth": 0.7},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "color": {
+          "field": "Country",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Greece","Slovenia","Italy","Germany","Poland","France","Czech Republic","Cyprus","Switzerland","Hungary","Australia","Canada","South Africa","Austria","Bulgaria","Vietnam","Finland","Spain","Liechtenstein","The Netherlands","Norway"],
+            "range": ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf","#aec7e8","#ffbb78","#98df8a","#ff9896","#c5b0d5","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5","#393b79"]
+          },
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "Country", "title": "Country"},
+          {"field": "Total Fees USD", "title": "Fee (USD)", "format": ",.0f"}
+        ]
+      },
+      "selection": {"highlight": {"type": "single", "on": "mouseover", "clear": "mouseout"}}
+    },
+
+    {
+      "transform": [
+        {
+          "joinaggregate": [
+            {"op": "q1", "field": "Total Fees USD", "as": "q1"},
+            {"op": "median", "field": "Total Fees USD", "as": "median"},
+            {"op": "q3", "field": "Total Fees USD", "as": "q3"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {"calculate": "datum.q3 - datum.q1", "as": "iqr"},
+        {"calculate": "datum.q1 - 1.5 * datum.iqr", "as": "lowerBound"},
+        {"calculate": "datum.q3 + 1.5 * datum.iqr", "as": "upperBound"},
+        {
+          "filter": "datum['Total Fees USD'] >= datum.lowerBound && datum['Total Fees USD'] <= datum.upperBound"
+        },
+        {
+          "joinaggregate": [
+            {"op": "min", "field": "Total Fees USD", "as": "lowerWhisker"},
+            {"op": "max", "field": "Total Fees USD", "as": "upperWhisker"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {
+          "aggregate": [
+            {"op": "argmax", "field": "median", "as": "dummyMedianIndex"},
+            {"op": "min", "field": "q1", "as": "q1"},
+            {"op": "median", "field": "median", "as": "median"},
+            {"op": "max", "field": "q3", "as": "q3"},
+            {"op": "min", "field": "lowerWhisker", "as": "lowerWhisker"},
+            {"op": "max", "field": "upperWhisker", "as": "upperWhisker"}
+          ],
+          "groupby": ["Scenario Ref"]
+        },
+        {
+          "calculate": "datum.q1", "as": "Q1"
+        },
+        {
+          "calculate": "datum.q3", "as": "Q3"
+        }
+      ],
+      "mark": {"type": "point", "opacity": 0},
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "median", "type": "quantitative"},
+        "tooltip": [
+          {"field": "Scenario Ref", "title": "Scenario"},
+          {"field": "q1", "title": "Q1", "format": ",.0f"},
+          {"field": "median", "title": "Median", "format": ",.0f"},
+          {"field": "q3", "title": "Q3", "format": ",.0f"},
+          {"field": "lowerWhisker", "title": "Lower Whisker (Tukey)", "format": ",.0f"},
+          {"field": "upperWhisker", "title": "Upper Whisker (Tukey)", "format": ",.0f"}
+        ]
+      }
+    },
+
+    {
+      "mark": {
+        "type": "text",
+        "dx": 10,
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "align": "left",
+        "baseline": "middle"
+      },
+      "encoding": {
+        "x": {"field": "Scenario Ref", "type": "nominal"},
+        "y": {"field": "Total Fees USD", "type": "quantitative"},
+        "text": {"field": "Country"},
+        "opacity": {
+          "condition": {"selection": "highlight", "value": 1},
+          "value": 0
+        },
+        "color": {
+          "condition": {"selection": "highlight", "field": "Country", "type": "nominal"},
+          "value": "black"
+        }
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"labelFontSize": 14, "titleFontSize": 14},
+    "legend": {"labelFontSize": 12, "titleFontSize": 14}
+  }
+}
